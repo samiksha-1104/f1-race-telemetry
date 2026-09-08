@@ -1,0 +1,15 @@
+{
+  "api": {
+    "baseUrl": "https://api.openf1.org/v1",
+    "cacheDir": "./data/cache"
+  },
+  "analysis": {
+    "minLapTime": 60,
+    "maxLapTime": 200,
+    "interpolationPoints": 1000
+  },
+  "dashboard": {
+    "title": "F1 Pit Wall Telemetry Dashboard",
+    "port": 3000
+  }
+} 

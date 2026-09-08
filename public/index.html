@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Pit Wall | Race Engineering</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
+</head>
+<body>
+    <div class="f1-background" aria-hidden="true">
+        <div class="f1-mark">F1</div>
+        <div class="track-line"></div>
+        <div class="animated-car"><span></span><i></i><i></i></div>
+    </div>
+    <div class="container">
+        <header class="header">
+            <div>
+                <p class="eyebrow">RACE ENGINEERING </p>
+                <h1>F1 Race <span>Telemetry Lab</span></h1>
+                <p class="subtitle">Find the lap time in the noise. Compare every input, corner by corner.</p>
+            </div>
+            <div class="header-readout">
+                <span class="readout-label">LIVE FEED</span>
+                <div class="status" aria-live="polite"><i></i><span id="statusText">Ready for a session</span></div>
+                <span class="readout-note">01 / SELECT A RUN</span>
+            </div>
+        </header>
+
+        <div class="race-marquee" aria-hidden="true">
+            <span class="marquee-label">PIT WALL SIGNAL</span>
+            <div class="signal-track"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <span class="marquee-value">SECTOR SCAN / READY</span>
+        </div>
+
+        <nav class="section-nav" aria-label="Dashboard sections">
+            <a href="#championships" class="nav-link">01 <span>Champions</span></a>
+            <a href="#telemetrySection" class="nav-link" data-action="telemetry">02 <span>Telemetry</span></a>
+            <a href="#driverGridSection" class="nav-link">03 <span>Driver grid</span></a>
+            <a href="#historicalAnalysis" class="nav-link" data-action="history">04 <span>Race history</span></a>
+            <a href="#incidentAtlas" class="nav-link">05 <span>Incident atlas</span></a>
+        </nav>
+
+        <section class="controls">
+            <div class="control-group">
+                <label for="year">Season</label>
+                <select id="year">
+                    <option value="2025">2025</option>
+                    <option value="2026">2026</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                </select>
+                <small class="control-help">OpenF1 telemetry: 2023–2026</small>
+            </div>
+            <div class="control-group">
+                <label for="session">Session</label>
+                <select id="session">
+                    <option value="">Select a session</option>
+                </select>
+                <small id="sessionMeta" class="control-help">Race weekends will appear here</small>
+            </div>
+            <div class="control-group">
+                <label for="driver1">Car 01</label>
+                <select id="driver1">
+                    <option value="">Select driver</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="driver2">Car 02</label>
+                <select id="driver2">
+                    <option value="">Select driver</option>
+                </select>
+            </div>
+            <button id="loadBtn" onclick="loadData()"><span class="button-label">Compare telemetry</span><span class="button-arrow">→</span></button>
+        </section>
+        <section class="session-results" id="sessionResults" aria-live="polite" hidden>
+            <div class="section-heading"><div><p class="eyebrow">SESSION CLASSIFICATION</p><h2 id="resultTitle">Session result</h2></div><span id="resultSource">OpenF1 timing feed</span></div>
+            <div class="result-hero" id="resultHero"></div>
+            <div class="podium-grid" id="podiumGrid"></div>
+            <div class="classification-list" id="classificationList"></div>
+        </section>
+        <p id="notice" class="notice" role="status"></p>
+
+        <section class="championships" id="championships" aria-labelledby="championshipTitle">
+            <div class="section-heading">
+                <div><p class="eyebrow">THE LONG RUN</p><h2 id="championshipTitle">World champions</h2></div>
+                <span id="championSeason">2025 season</span>
+            </div>
+            <div class="champion-feature" id="championFeature"></div>
+            <div class="champion-list" id="championList"></div>
+        </section>
+
+        <section class="telemetry-suite telemetry-view" id="telemetrySection" aria-labelledby="telemetryTitle">
+            <div class="section-heading"><div><p class="eyebrow">LIVE COMPARISON / TWO CARS</p><h2 id="telemetryTitle">Driver telemetry</h2></div><span>Select two cars above</span></div>
+            <section class="driver-strip" aria-label="Selected drivers">
+                <article class="driver-card" id="driverCard1"><div class="portrait-placeholder">01</div><div><small>CAR 01</small><strong>Select a driver</strong><span>Waiting for session</span></div></article>
+                <div class="versus">VS</div>
+                <article class="driver-card" id="driverCard2"><div class="portrait-placeholder">02</div><div><small>CAR 02</small><strong>Select a driver</strong><span>Waiting for session</span></div></article>
+            </section>
+            <section class="metrics telemetry-view" id="metrics">
+                <div class="metric-card"><h3>Telemetry source</h3><p id="lapTime1">OpenF1</p></div>
+                <div class="metric-card"><h3>Samples compared</h3><p id="lapTime2">--</p></div>
+                <div class="metric-card"><h3>Peak speed delta</h3><p id="timeDelta">--</p></div>
+                <div class="metric-card"><h3>Average speed delta</h3><p id="speedDelta">--</p></div>
+            </section>
+            <section class="charts telemetry-view">
+                <div class="chart-container"><div id="speedChart" class="chart"></div></div>
+                <div class="chart-container"><div id="deltaChart" class="chart"></div></div>
+                <div class="chart-container"><div id="throttleChart" class="chart"></div></div>
+                <div class="chart-container"><div id="brakeChart" class="chart"></div></div>
+            </section>
+            <section class="analysis telemetry-view" id="analysis">
+                <div class="section-heading"><div><p class="eyebrow">DECISION SUPPORT</p><h2>Corner Analysis</h2></div><span>Top five deltas</span></div>
+                <div id="cornerAnalysis"></div>
+            </section>
+        </section>
+
+        <section class="driver-grid-section" id="driverGridSection" aria-labelledby="driverGridTitle">
+            <div class="section-heading"><div><p class="eyebrow">THE PADDOCK / DRIVER GRID</p><h2 id="driverGridTitle">Current grid & recent seasons</h2></div><span id="gridMeta">Loading current grid</span></div>
+            <div class="current-grid" id="currentGrid"></div>
+            <div class="past-grid" id="pastGrid"></div>
+        </section>
+
+        <section class="historical-analysis" id="historicalAnalysis" aria-live="polite">
+            <div class="section-heading"><div><p class="eyebrow">HISTORICAL RESULTS</p><h2>Season analysis</h2></div><span id="historicalSource">Jolpica results archive</span></div>
+            <div class="historical-grid" id="historicalDetails"></div>
+            <div class="race-timeline" id="raceTimeline"></div>
+            <div class="incident-board" id="incidentBoard"></div>
+        </section>
+
+        <section class="incident-atlas" id="incidentAtlas" aria-labelledby="incidentAtlasTitle">
+            <div class="section-heading"><div><p class="eyebrow">INCIDENT ATLAS</p><h2 id="incidentAtlasTitle">The moments behind the numbers</h2></div><span>Race impact · driver safety · loss</span></div>
+            <div class="incident-feature" id="incidentFeature"></div>
+            <div class="atlas-grid" id="atlasGrid"></div>
+        </section>
+
+        <footer>Built for race engineers · data by <a href="https://openf1.org" target="_blank" rel="noreferrer">OpenF1</a> · FastF1 compatible data model</footer>
+    </div>
+
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>
