@@ -27,7 +27,7 @@ const worldChampions = {
     2022: ['Max Verstappen', 'Red Bull Racing'], 2023: ['Max Verstappen', 'Red Bull Racing'],
     2024: ['Max Verstappen', 'Red Bull Racing'], 2025: ['Lando Norris', 'McLaren']
 };
-const telemetryYears = new Set([2023, 2024, 2025]);
+const telemetryYears = new Set([2023, 2024, 2025, 2026]);
 const recentDriverGrids = {
     2025: [['Lando Norris', 'McLaren'], ['Oscar Piastri', 'McLaren'], ['Max Verstappen', 'Red Bull'], ['Liam Lawson', 'Racing Bulls'], ['Charles Leclerc', 'Ferrari'], ['Lewis Hamilton', 'Ferrari'], ['George Russell', 'Mercedes'], ['Andrea Kimi Antonelli', 'Mercedes'], ['Fernando Alonso', 'Aston Martin'], ['Lance Stroll', 'Aston Martin'], ['Pierre Gasly', 'Alpine'], ['Franco Colapinto', 'Alpine'], ['Alex Albon', 'Williams'], ['Carlos Sainz', 'Williams'], ['Yuki Tsunoda', 'Red Bull'], ['Nico Hulkenberg', 'Sauber'], ['Esteban Ocon', 'Haas'], ['Oliver Bearman', 'Haas'], ['Isack Hadjar', 'Racing Bulls'], ['Gabriel Bortoleto', 'Sauber']],
     2024: [['Max Verstappen', 'Red Bull'], ['Sergio Perez', 'Red Bull'], ['Lando Norris', 'McLaren'], ['Oscar Piastri', 'McLaren'], ['Charles Leclerc', 'Ferrari'], ['Carlos Sainz', 'Ferrari'], ['Lewis Hamilton', 'Mercedes'], ['George Russell', 'Mercedes'], ['Fernando Alonso', 'Aston Martin'], ['Lance Stroll', 'Aston Martin'], ['Pierre Gasly', 'Alpine'], ['Esteban Ocon', 'Alpine'], ['Alex Albon', 'Williams'], ['Logan Sargeant', 'Williams'], ['Yuki Tsunoda', 'RB'], ['Daniel Ricciardo', 'RB'], ['Nico Hulkenberg', 'Haas'], ['Kevin Magnussen', 'Haas'], ['Valtteri Bottas', 'Sauber'], ['Zhou Guanyu', 'Sauber']],
