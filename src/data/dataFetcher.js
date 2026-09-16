@@ -8,10 +8,13 @@ const fs = require('fs').promises;
 const path = require('path');
 
 class F1DataFetcher {
-    constructor(configPath = './config/config.json') {
-        this.config = require(path.resolve(configPath));
+    constructor(configPath) {
+        const resolvedConfigPath = configPath || path.join(__dirname, '..', '..', 'config', 'config.json');
+        this.config = require(resolvedConfigPath);
         this.baseUrl = this.config.api.baseUrl;
-        this.cacheDir = path.resolve(__dirname, '..', '..', this.config.api.cacheDir);
+        this.cacheDir = process.env.VERCEL
+            ? path.join('/tmp', 'f1-pitwall-cache')
+            : path.resolve(__dirname, '..', '..', this.config.api.cacheDir);
         this.ensureCacheDir();
     }
 
