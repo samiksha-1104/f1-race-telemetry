@@ -1,7 +1,14 @@
 {
+  "version": 2,
   "functions": {
-    "api/**/*.js": {
+    "api/index.js": {
       "includeFiles": "config/config.json"
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api"
+    }
+  ]
 }

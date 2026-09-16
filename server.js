@@ -19,7 +19,7 @@ const dashboard = new DashboardService(fetcher, analyzer);
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
 app.get('/api/test', (req, res) => {
@@ -77,8 +77,11 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Start server
-app.listen(port, () => {
-    console.log(`🏎️ F1 Pit Wall Dashboard running at http://localhost:${port}`);
-    console.log(`📊 Open your browser to view the dashboard`);
-});
+if (require.main === module) {
+    app.listen(port, () => {
+        console.log(`🏎️ F1 Pit Wall Dashboard running at http://localhost:${port}`);
+        console.log(`📊 Open your browser to view the dashboard`);
+    });
+}
+
+module.exports = app;
