@@ -86,11 +86,16 @@
 
         <section class="championships" id="championships" aria-labelledby="championshipTitle">
             <div class="section-heading">
-                <div><p class="eyebrow">THE LONG RUN</p><h2 id="championshipTitle">World champions</h2></div>
-                <span id="championSeason">2026 season</span>
+                <div><p class="eyebrow">THE LONG RUN</p><h2 id="championshipTitle">World championship</h2></div>
+                <label class="season-picker" for="standingsYear">Season
+                    <select id="standingsYear" aria-label="Championship season"></select>
+                </label>
             </div>
             <div class="champion-feature" id="championFeature"></div>
-            <div class="champion-list" id="championList"></div>
+            <div class="standings-wrap">
+                <div class="standings-row standings-header" aria-hidden="true"><span>Pos</span><span>Driver</span><span class="standing-team">Constructor</span><span>Points</span><span>Wins</span></div>
+                <div class="standings-list" id="championList" aria-live="polite"></div>
+            </div>
         </section>
 
         <section class="telemetry-suite telemetry-view" id="telemetrySection" aria-labelledby="telemetryTitle">
@@ -127,6 +132,7 @@
         <section class="historical-analysis" id="historicalAnalysis" aria-live="polite">
             <div class="section-heading"><div><p class="eyebrow">HISTORICAL RESULTS</p><h2>Season analysis</h2></div><span id="historicalSource">Jolpica results archive</span></div>
             <div class="historical-grid" id="historicalDetails"></div>
+            <div class="historical-standings" id="historicalStandings" hidden></div>
             <div class="race-timeline" id="raceTimeline"></div>
             <div class="incident-board" id="incidentBoard"></div>
         </section>

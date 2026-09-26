@@ -63,6 +63,9 @@ app.get('/api/session-results/:sessionKey', (req, res) => apiCall(res, async () 
         }));
     return { results, source: 'OpenF1 session classification' };
 }));
+app.get('/api/standings/:year', (req, res) => apiCall(res, async () => (
+    await fetcher.getHistoricalStandings(req.params.year)
+)));
 app.get('/api/history/:year', (req, res) => apiCall(res, async () => ({
     ...(await fetcher.getHistoricalSeason(req.params.year))
 })));

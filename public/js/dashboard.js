@@ -5,28 +5,8 @@
 let currentData = null;
 let sessionRequestId = 0;
 let driverRequestId = 0;
-
-const worldChampions = {
-    1988: ['Ayrton Senna', 'McLaren'], 1989: ['Alain Prost', 'McLaren'],
-    1990: ['Ayrton Senna', 'McLaren'], 1991: ['Ayrton Senna', 'McLaren'],
-    1992: ['Nigel Mansell', 'Williams'], 1993: ['Alain Prost', 'Williams'],
-    1994: ['Michael Schumacher', 'Benetton'], 1995: ['Michael Schumacher', 'Benetton'],
-    1996: ['Damon Hill', 'Williams'], 1997: ['Jacques Villeneuve', 'Williams'],
-    1998: ['Mika Hakkinen', 'McLaren'], 1999: ['Mika Hakkinen', 'McLaren'],
-    2000: ['Michael Schumacher', 'Ferrari'], 2001: ['Michael Schumacher', 'Ferrari'],
-    2002: ['Michael Schumacher', 'Ferrari'], 2003: ['Michael Schumacher', 'Ferrari'],
-    2004: ['Michael Schumacher', 'Ferrari'], 2005: ['Fernando Alonso', 'Renault'],
-    2006: ['Fernando Alonso', 'Renault'], 2007: ['Kimi Raikkonen', 'Ferrari'],
-    2008: ['Lewis Hamilton', 'McLaren'], 2009: ['Jenson Button', 'Brawn'],
-    2010: ['Sebastian Vettel', 'Red Bull Racing'], 2011: ['Sebastian Vettel', 'Red Bull Racing'],
-    2012: ['Sebastian Vettel', 'Red Bull Racing'], 2013: ['Sebastian Vettel', 'Red Bull Racing'],
-    2014: ['Lewis Hamilton', 'Mercedes'], 2015: ['Lewis Hamilton', 'Mercedes'],
-    2016: ['Nico Rosberg', 'Mercedes'], 2017: ['Lewis Hamilton', 'Mercedes'],
-    2018: ['Lewis Hamilton', 'Mercedes'], 2019: ['Lewis Hamilton', 'Mercedes'],
-    2020: ['Lewis Hamilton', 'Mercedes'], 2021: ['Max Verstappen', 'Red Bull Racing'],
-    2022: ['Max Verstappen', 'Red Bull Racing'], 2023: ['Max Verstappen', 'Red Bull Racing'],
-    2024: ['Max Verstappen', 'Red Bull Racing'], 2025: ['Lando Norris', 'McLaren']
-};
+let standingsRequestId = 0;
+let historicalRequestId = 0;
 const telemetryYears = new Set([2023, 2024, 2025, 2026]);
 const recentDriverGrids = {
     2025: [['Lando Norris', 'McLaren'], ['Oscar Piastri', 'McLaren'], ['Max Verstappen', 'Red Bull'], ['Liam Lawson', 'Racing Bulls'], ['Charles Leclerc', 'Ferrari'], ['Lewis Hamilton', 'Ferrari'], ['George Russell', 'Mercedes'], ['Andrea Kimi Antonelli', 'Mercedes'], ['Fernando Alonso', 'Aston Martin'], ['Lance Stroll', 'Aston Martin'], ['Pierre Gasly', 'Alpine'], ['Franco Colapinto', 'Alpine'], ['Alex Albon', 'Williams'], ['Carlos Sainz', 'Williams'], ['Yuki Tsunoda', 'Red Bull'], ['Nico Hulkenberg', 'Sauber'], ['Esteban Ocon', 'Haas'], ['Oliver Bearman', 'Haas'], ['Isack Hadjar', 'Racing Bulls'], ['Gabriel Bortoleto', 'Sauber']],
@@ -175,24 +155,47 @@ function syncDriverCard(selectId, cardId, car) {
     renderDriverCard(cardId, option && option.dataset.driver ? JSON.parse(option.dataset.driver) : null, car);
 }
 
-function renderChampions(selectedYear) {
-    const selected = Number(selectedYear);
-    const champion = worldChampions[selected];
-    $('championSeason').textContent = `${selected} season`;
-    $('championFeature').innerHTML = champion
-        ? `<strong>${champion[0]}</strong><span>${champion[1]} · Drivers' World Champion</span>`
-        : '<strong>Champion data unavailable</strong><span>Select a season from the historical list</span>';
-    $('championList').innerHTML = Object.entries(worldChampions)
-        .sort(([first], [second]) => Number(second) - Number(first))
-        .map(([year, details]) => `<button class="champion-item${Number(year) === selected ? ' active' : ''}" data-year="${year}"><b>${year}</b><span>${details[0]}</span></button>`)
-        .join('');
-    document.querySelectorAll('.champion-item').forEach(item => {
-        item.addEventListener('click', () => {
-            const year = Number(item.dataset.year);
-            renderChampions(year);
-            loadHistoricalAnalysis(year, 'historicalAnalysis');
-        });
-    });
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, character => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[character]);
+}
+
+function renderStandingsRows(standings) {
+    return standings.map(standing => `
+        <div class="standings-row">
+            <span>${standing.position}</span>
+            <strong>${escapeHtml(standing.name)}</strong>
+            <span class="standing-team">${escapeHtml(standing.team)}</span>
+            <b>${Number(standing.points).toLocaleString()} <small>pts</small></b>
+            <span>${standing.wins} <small>wins</small></span>
+        </div>`).join('');
+}
+
+async function loadChampionshipStandings(year) {
+    const requestId = ++standingsRequestId;
+    $('championFeature').innerHTML = '<strong>Loading standings...</strong><span>Fetching official season points</span>';
+    $('championList').innerHTML = '';
+    try {
+        const response = await fetch(`/api/standings/${year}`);
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || 'Championship standings unavailable');
+        if (requestId !== standingsRequestId) return;
+
+        const leader = payload.standings[0];
+        $('championFeature').innerHTML = payload.seasonComplete && payload.champion
+            ? `<strong>${escapeHtml(payload.champion.name)}</strong><span>${escapeHtml(payload.champion.team)} · ${payload.champion.points} points · ${payload.champion.wins} wins · Drivers' World Champion</span>`
+            : leader
+                ? `<strong>Season in progress</strong><span>Points leader: ${escapeHtml(leader.name)} · ${leader.points} points after Round ${payload.round} of ${payload.totalRounds}</span>`
+                : '<strong>No points recorded yet</strong><span>The season standings are not available.</span>';
+        $('championList').innerHTML = payload.standings.length
+            ? renderStandingsRows(payload.standings)
+            : '<p class="historical-loading">No championship standings are available for this season yet.</p>';
+    } catch (error) {
+        if (requestId !== standingsRequestId) return;
+        $('championFeature').innerHTML = '<strong>Standings unavailable</strong><span>Check your connection and try again.</span>';
+        $('championList').innerHTML = `<p class="historical-loading">${escapeHtml(error.message)}</p>`;
+    }
 }
 
 function renderIncidentAtlas(selectedYear = 2021) {
@@ -242,8 +245,10 @@ function openTelemetryView() {
 }
 
 async function loadHistoricalAnalysis(year, scrollTarget = '') {
+    const requestId = ++historicalRequestId;
     document.querySelectorAll('.telemetry-view').forEach(element => { element.hidden = true; });
     $('historicalAnalysis').hidden = false;
+    $('historicalStandings').hidden = true;
     $('historicalDetails').innerHTML = '<p class="historical-loading">Loading historical championship results...</p>';
     if (scrollTarget) {
         requestAnimationFrame(() => $(scrollTarget)?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
@@ -252,13 +257,17 @@ async function loadHistoricalAnalysis(year, scrollTarget = '') {
     try {
         const response = await fetch(`/api/history/${year}`);
         const payload = await response.json();
-        if (!response.ok || !payload.champion) throw new Error(payload.error || 'Historical results unavailable');
+        if (requestId !== historicalRequestId) return;
+        if (!response.ok || !Array.isArray(payload.standings)) throw new Error(payload.error || 'Historical results unavailable');
         const champion = payload.champion;
+        const leader = payload.standings[0];
         $('historicalDetails').innerHTML = `
-            <div class="metric-card"><h3>World champion</h3><p>${champion.name}</p></div>
-            <div class="metric-card"><h3>Constructor</h3><p>${champion.team}</p></div>
-            <div class="metric-card"><h3>Championship points</h3><p>${champion.points}</p></div>
-            <div class="metric-card"><h3>Race wins</h3><p>${champion.wins}</p></div>`;
+            <div class="metric-card"><h3>${payload.seasonComplete ? 'World champion' : 'Current points leader'}</h3><p>${escapeHtml(champion?.name || leader?.name || 'No points recorded')}</p></div>
+            <div class="metric-card"><h3>Constructor</h3><p>${escapeHtml((champion || leader)?.team || 'Not available')}</p></div>
+            <div class="metric-card"><h3>${payload.seasonComplete ? 'Championship points' : `Points after round ${payload.round}`}</h3><p>${(champion || leader)?.points ?? '—'}</p></div>
+            <div class="metric-card"><h3>Race wins</h3><p>${(champion || leader)?.wins ?? '—'}</p></div>`;
+        $('historicalStandings').hidden = false;
+        $('historicalStandings').innerHTML = `<h3>Driver championship points · ${year}</h3><div class="standings-wrap"><div class="standings-row standings-header" aria-hidden="true"><span>Pos</span><span>Driver</span><span class="standing-team">Constructor</span><span>Points</span><span>Wins</span></div><div class="standings-list">${renderStandingsRows(payload.standings)}</div></div>`;
         $('raceTimeline').innerHTML = payload.races.map(race => {
             const incidents = race.incidents || [];
             const entries = race.entries || [];
@@ -278,7 +287,10 @@ async function loadHistoricalAnalysis(year, scrollTarget = '') {
             <div class="incident-list">${incidents.map(driver => `<div class="incident-row"><strong>${driver.name}</strong><span>${driver.crashes ? `<b class="crash">${driver.crashes} crash${driver.crashes > 1 ? 'es' : ''}</b>` : ''}${driver.dnf ? `<b class="dnf">${driver.dnf} DNF</b>` : ''}${driver.dns ? `<b class="dns">${driver.dns} DNS</b>` : ''}</span></div>`).join('')}</div>`;
         setNotice(`${year} season analysis ready · ${payload.races.length} races · OpenF1 telemetry begins in 2023.`, 'success');
     } catch (error) {
+        if (requestId !== historicalRequestId) return;
         $('historicalDetails').innerHTML = '<p class="historical-loading">Historical results could not be loaded.</p>';
+        $('historicalStandings').hidden = true;
+        $('historicalStandings').innerHTML = '';
         $('raceTimeline').innerHTML = '';
         $('incidentBoard').innerHTML = '';
         setNotice(error.message, 'error');
@@ -335,8 +347,15 @@ async function loadSessions(year) {
 
 // Load sessions when year changes and on the initial page load.
 $('year').addEventListener('change', event => loadSessions(event.target.value));
-$('year').addEventListener('change', event => renderChampions(event.target.value));
 $('year').addEventListener('change', showTelemetryView);
+$('standingsYear').innerHTML = Array.from(
+    { length: new Date().getFullYear() - 1949 },
+    (_, index) => `<option value="${new Date().getFullYear() - index}">${new Date().getFullYear() - index}</option>`
+).join('');
+$('standingsYear').addEventListener('change', event => {
+    loadChampionshipStandings(event.target.value);
+    if (!$('historicalAnalysis').hidden) loadHistoricalAnalysis(Number(event.target.value));
+});
 
 // Load drivers when session changes
 document.getElementById('session').addEventListener('change', async function() {
@@ -373,7 +392,7 @@ document.getElementById('session').addEventListener('change', async function() {
 
 document.querySelector('[data-action="history"]').addEventListener('click', event => {
     event.preventDefault();
-    loadHistoricalAnalysis(Number($('year').value), 'historicalAnalysis');
+    loadHistoricalAnalysis(Number($('standingsYear').value), 'historicalAnalysis');
 });
 document.querySelector('[data-action="telemetry"]').addEventListener('click', event => {
     event.preventDefault();
@@ -609,7 +628,7 @@ function identifyCorners(comparison) {
 }
 
 loadSessions($('year').value);
-renderChampions($('year').value);
+loadChampionshipStandings($('standingsYear').value);
 renderIncidentAtlas();
-if (window.location.hash === '#historicalAnalysis') loadHistoricalAnalysis(Number($('year').value));
+if (window.location.hash === '#historicalAnalysis') loadHistoricalAnalysis(Number($('standingsYear').value));
 else showTelemetryView();

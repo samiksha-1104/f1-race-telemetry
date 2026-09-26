@@ -85,17 +85,38 @@ class F1DataFetcher {
         return await this.fetchData('position', { session_key: sessionKey });
     }
 
-    async getHistoricalChampion(year) {
-        const response = await axios.get(`https://api.jolpi.ca/ergast/f1/${year}/driverstandings/1.json`);
-        const standing = response.data?.MRData?.StandingsTable?.StandingsLists?.[0]?.DriverStandings?.[0];
-        if (!standing) throw new Error(`No championship data was found for ${year}`);
-        const driver = standing.Driver;
+    async getHistoricalStandings(year) {
+        const season = Number(year);
+        const currentSeason = new Date().getFullYear();
+        if (!Number.isInteger(season) || season < 1950 || season > currentSeason) {
+            throw new Error(`Season must be between 1950 and ${currentSeason}`);
+        }
+
+        const [standingsResponse, scheduleResponse] = await Promise.all([
+            axios.get(`https://api.jolpi.ca/ergast/f1/${season}/driverStandings.json`, { params: { limit: 100 } }),
+            axios.get(`https://api.jolpi.ca/ergast/f1/${season}/races.json`, { params: { limit: 100 } })
+        ]);
+        const standingsTable = standingsResponse.data?.MRData?.StandingsTable;
+        const latestRound = standingsTable?.StandingsLists?.[0];
+        const schedule = scheduleResponse.data?.MRData?.RaceTable?.Races || [];
+        const standings = (latestRound?.DriverStandings || []).map(standing => ({
+            position: Number(standing.position),
+            name: `${standing.Driver?.givenName || ''} ${standing.Driver?.familyName || ''}`.trim() || 'Unknown driver',
+            team: standing.Constructors?.[standing.Constructors.length - 1]?.name || 'Team unavailable',
+            points: Number(standing.points || 0),
+            wins: Number(standing.wins || 0)
+        }));
+        const round = Number(standingsTable?.round || latestRound?.round || 0);
+        const totalRounds = schedule.length || Number(scheduleResponse.data?.MRData?.total || 0);
+        const seasonComplete = season < currentSeason || (totalRounds > 0 && round >= totalRounds);
+
         return {
-            year: Number(year),
-            name: `${driver.givenName} ${driver.familyName}`,
-            team: standing.Constructors?.[0]?.name || 'Team unavailable',
-            points: Number(standing.points),
-            wins: Number(standing.wins)
+            year: season,
+            round,
+            totalRounds,
+            seasonComplete,
+            champion: seasonComplete ? standings[0] || null : null,
+            standings
         };
     }
 
@@ -183,8 +204,9 @@ class F1DataFetcher {
             };
         });
 
+        const championship = await this.getHistoricalStandings(season);
         return {
-            champion: await this.getHistoricalChampion(season),
+            ...championship,
             races,
             drivers: [...drivers.values()].sort((first, second) => {
                 return (second.crashes - first.crashes) || (second.dnf - first.dnf) || first.name.localeCompare(second.name);
