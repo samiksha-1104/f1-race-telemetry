@@ -1,0 +1,16 @@
+{
+  "name": "F1 Race Telemetry Lab",
+  "short_name": "F1 Telemetry",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#05070b",
+  "theme_color": "#05070b",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

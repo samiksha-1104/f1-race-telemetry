@@ -6,11 +6,11 @@
 const axios = require('axios');
 const fs = require('fs').promises;
 const path = require('path');
+const defaultConfig = require('../../config/config.json');
 
 class F1DataFetcher {
     constructor(configPath) {
-        const resolvedConfigPath = configPath || path.join(__dirname, '..', '..', 'config', 'config.json');
-        this.config = require(resolvedConfigPath);
+        this.config = configPath ? require(configPath) : defaultConfig;
         this.baseUrl = this.config.api.baseUrl;
         this.cacheDir = process.env.VERCEL
             ? path.join('/tmp', 'f1-pitwall-cache')

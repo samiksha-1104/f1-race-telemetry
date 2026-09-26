@@ -1,4 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="F1">
-  <rect width="64" height="64" rx="10" fill="#e10600"/>
-  <path fill="#fff" d="M10 18h28l-3 8H20l-2 6h13l-3 8H15l-3 6H2l8-28zm28 0h14l-3 8H35l3-8zm-7 14h14l-3 8H28l3-8zm-7 14h14l-3 8H21l3-8z"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Race Telemetry Lab</title>
+  <rect width="512" height="512" rx="256" fill="#05070b"/>
+  <circle cx="256" cy="256" r="234" fill="none" stroke="#f4f6f8" stroke-width="7"/>
+  <circle cx="256" cy="256" r="213" fill="none" stroke="#087fe0" stroke-width="5" stroke-dasharray="480 70 245 544" transform="rotate(-90 256 256)"/>
+  <path d="M146 94a190 190 0 0 1 67-29M299 65a190 190 0 0 1 67 29M67 299a190 190 0 0 1 0-86M445 213a190 190 0 0 1 0 86M145 418a190 190 0 0 0 72 31M295 449a190 190 0 0 0 72-31" fill="none" stroke="#f21d35" stroke-width="9"/>
+  <path d="M278 112v117m25-108v108m25-95v93m25-70v70m-150-99v99m-25-83v83m-25-61v61" stroke="#273442" stroke-width="5"/>
+  <path d="m283 218 20-43 18 19 18-31 18 40 20-13 22 41" fill="none" stroke="#ff3048" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="m108 232 45-32 27 20 32-15 26-25 29-13" fill="none" stroke="#f4f6f8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="153" cy="200" r="7" fill="#05070b" stroke="#087fe0" stroke-width="4"/>
+  <circle cx="238" cy="180" r="7" fill="#05070b" stroke="#f21d35" stroke-width="4"/>
+  <path d="M91 279h38m254 0h38" stroke="#087fe0" stroke-width="5"/>
+  <path d="M82 299h41m266 0h41" stroke="#f21d35" stroke-width="5"/>
+  <path d="M95 319h42m246 0h42" stroke="#f4f6f8" stroke-width="4"/>
+  <g fill="#05070b" stroke="#56baff" stroke-width="4">
+    <path d="M132 310q2-38 22-54l44-9 31-21q27-17 54 0l31 21 44 9q20 16 22 54l-10 29-16 6H158l-16-6z"/>
+    <path d="M111 329q34-11 73-8l45 8 27 20 27-20 45-8q39-3 73 8l15 28-7 27-35 7H138l-35-7-7-27z" fill="#111720"/>
+  </g>
+  <path d="M214 254q42-23 84 0l20 38-15 32h-94l-15-32z" fill="#202a36" stroke="#f4f6f8" stroke-width="4"/>
+  <path d="M235 257q21-12 42 0l12 28h-66z" fill="#05070b"/>
+  <path d="M249 284h14l20 88h-54z" fill="#f21d35" stroke="#f4f6f8" stroke-width="3"/>
+  <path d="M97 364h64l38 15H91zm254 15 38-15h64l6 15z" fill="#087fe0" stroke="#f4f6f8" stroke-width="3"/>
+  <path d="M151 397h210m-185 12h160" stroke="#f21d35" stroke-width="5"/>
+  <path d="M148 431h216" stroke="#f4f6f8" stroke-width="2"/>
+  <text x="256" y="414" fill="#f4f6f8" font-family="Arial,sans-serif" font-size="15" font-weight="700" letter-spacing="5" text-anchor="middle">RACE TELEMETRY LAB</text>
+  <path d="M216 458h80l-16 16h-48z" fill="#f21d35"/>
+  <path d="M238 465h36" stroke="#f4f6f8" stroke-width="4"/>
 </svg>
