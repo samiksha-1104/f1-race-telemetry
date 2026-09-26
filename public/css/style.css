@@ -78,7 +78,19 @@ button:hover .button-arrow { transform: translateX(4px); }
 .champion-feature { display: flex; align-items: baseline; gap: 14px; padding: 14px 0 16px; border-bottom: 1px solid var(--line); }
 .champion-feature strong { color: var(--ink); font-family: 'Barlow Condensed'; font-size: 2.2rem; text-transform: uppercase; }
 .champion-feature span { color: var(--muted); font-size: .78rem; }
-.champion-list { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; padding-top: 12px; }
+.standings-wrap { max-width: 100%; margin-top: 12px; overflow-x: auto; }
+.standings-list { display: grid; gap: 1px; }
+.standings-row { display: grid; grid-template-columns: 52px minmax(150px, 1.5fr) minmax(150px, 1fr) minmax(100px, .7fr) minmax(84px, .6fr); gap: 12px; align-items: center; min-width: 0; padding: 11px 14px; border-bottom: 1px solid rgba(146,174,207,.14); color: var(--muted); font-size: .78rem; }
+.standings-row > * { min-width: 0; }
+.standings-row > strong { overflow: hidden; color: var(--ink); text-overflow: ellipsis; white-space: nowrap; }
+.standings-row > b { color: var(--yellow); font-variant-numeric: tabular-nums; }
+.standings-row > :nth-child(4), .standings-row > :nth-child(5) { text-align: right; white-space: nowrap; }
+.standings-row small { color: var(--muted); font-size: .68rem; }
+.standings-header { border-bottom-color: rgba(86,215,255,.35); color: var(--cyan); font: 700 .68rem 'Barlow Condensed'; letter-spacing: .1em; text-transform: uppercase; }
+.standings-list > .standings-row:nth-child(even) { background: rgba(16,31,54,.42); }
+.standings-list > .standings-row:hover { background: rgba(22,75,255,.14); }
+.historical-standings { margin-top: 18px; }
+.historical-standings h3 { margin-bottom: 8px; color: var(--ink); font: 700 1.25rem 'Barlow Condensed'; text-transform: uppercase; }
 .historical-analysis { margin: 0 0 18px; padding: 20px; border-top: 2px solid var(--yellow); background: var(--panel); }
 .historical-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 .historical-grid .metric-card p { font-size: 1.45rem; }
@@ -194,4 +206,4 @@ section { scroll-margin-top: 20px; }
 footer { border-top: 1px solid var(--line); }
 @media (max-width: 1100px) { .current-grid { grid-template-columns: repeat(4, 1fr); }.past-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 900px) { .header { min-height: 280px; }.section-nav { justify-content: start; overflow-x: auto; }.section-nav a { flex: 0 0 auto; }.incident-feature { grid-template-columns: 1fr 1fr; }.incident-feature p { grid-column: 1 / -1; }.atlas-grid { grid-template-columns: 1fr 1fr; }.current-grid { grid-template-columns: repeat(3, 1fr); }.past-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 560px) { body { padding: 14px; }.controls { margin: 0 -14px; padding-inline: 14px; }.header { min-height: 280px; padding-top: 35px; } h1 { font-size: clamp(3.4rem, 18vw, 5.6rem); }.telemetry-suite, .incident-atlas, .driver-grid-section { padding: 16px; }.incident-feature, .atlas-grid { grid-template-columns: 1fr; }.incident-feature strong, .incident-feature p, .incident-feature small, .incident-feature a { grid-column: auto; }.atlas-grid { display: grid; }.current-grid, .past-grid, .champion-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }.championships { min-width: 0; padding: 14px; } body::before { inset: 0 0 65% 20%; opacity: .2; } body::after { inset: 70% 0 0 20%; } }
+@media (max-width: 560px) { body { padding: 14px; }.controls { margin: 0 -14px; padding-inline: 14px; }.header { min-height: 280px; padding-top: 35px; } h1 { font-size: clamp(3.4rem, 18vw, 5.6rem); }.telemetry-suite, .incident-atlas, .driver-grid-section { padding: 16px; }.incident-feature, .atlas-grid { grid-template-columns: 1fr; }.incident-feature strong, .incident-feature p, .incident-feature small, .incident-feature a { grid-column: auto; }.atlas-grid { display: grid; }.current-grid, .past-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }.championships { min-width: 0; padding: 14px; }.standings-row { grid-template-columns: 34px minmax(0, 1fr) 66px 58px; gap: 7px; padding: 9px 6px; font-size: .7rem; }.standing-team { display: none; }.standings-header { font-size: .63rem; } body::before { inset: 0 0 65% 20%; opacity: .2; } body::after { inset: 70% 0 0 20%; } }
