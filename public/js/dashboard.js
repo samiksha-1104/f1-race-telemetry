@@ -409,6 +409,8 @@ async function loadData() {
         setNotice('Select a session and two drivers before comparing telemetry.', 'error');
         return;
     }
+
+    openTelemetryView();
     
     const loadBtn = document.getElementById('loadBtn');
     document.body.classList.add('is-loading');
